@@ -1,0 +1,50 @@
+<ng-container *ngIf="note$ | async as note">
+  <p-tabView>
+    <p-tabPanel class="flex h-full" header="Raw Transcript">
+      <form class="h-full" [formGroup]="formGroup">
+        <p-editor formControlName="rawText">
+          <ng-template pTemplate="header">
+            <span class="ql-formats">
+              <select class="ql-size">
+                <option value="small"></option>
+                <!-- Note a missing, thus falsy value, is used to reset to default -->
+                <option selected></option>
+                <option value="large"></option>
+                <option value="huge"></option>
+              </select>
+            </span>
+            <span class="ql-formats">
+              <button type="button" class="ql-bold" aria-label="Bold"></button>
+              <button
+                type="button"
+                class="ql-italic"
+                aria-label="Italic"
+              ></button>
+              <button
+                type="button"
+                class="ql-underline"
+                aria-label="Underline"
+              ></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                type="button"
+                class="ql-code-block"
+                aria-label="CodeBlock"
+              ></button>
+            </span>
+          </ng-template>
+        </p-editor>
+      </form>
+    </p-tabPanel>
+    <p-tabPanel header="AI Output">
+      <p>
+        {{ note.aiOutput }}
+      </p>
+    </p-tabPanel>
+  </p-tabView>
+
+  <div class="absolute center-bottom">
+    <app-audio-recorder-button></app-audio-recorder-button>
+  </div>
+</ng-container>

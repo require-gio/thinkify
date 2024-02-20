@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: Thinkify - OpenAPI 3.0
+  version: 1.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://thinkify.giolom.com/api/v1
+tags:
+  - name: note
+    description: retrieving note information
+  - name: ai
+    description: ai operations
+paths:
+  /note/list:
+    get:
+      tags:
+        - note
+      summary: Retrieve list of all notes
+      description: Array of all notes
+      operationId: getAllNotes
+      responses:
+        '202':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteMetaData'  
+        '404':
+          description: Some bricks or tenants not found
+  /note/{noteId}:
+    parameters:
+      - name: noteId
+        in: path
+        required: true
+        description: the note identifier, as noteId 
+        schema:
+          type: string
+    get:
+      tags:
+        - note
+      summary: Get one single note by id
+      description: Full note object with all attributes
+      operationId: getNoteById
+      responses:
+        '202':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'  
+        '404':
+          description: note not found
+    patch:
+      tags:
+        - note
+      summary: Update one single note by id
+      description: Full note object with all attributes
+      operationId: updateNoteById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '202':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '404':
+          description: note not found
+  /ai/generateResponseForRawNote:
+    post:
+      tags:
+        - ai
+      summary: Generate an AI response based on a raw note and prompt
+      description: raw note is taken as input
+      operationId: generateResponseForRawNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                noteId:
+                  type: string
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIResponse'
+                
+        '400':
+          description: Invalid status value
+  
+  /ai/transcribeAudioForNote:
+    post:
+      tags:
+        - ai
+      summary: Transcribe an audio file
+      description: Take an audio file and transcribe it, so we have a textual representation of its content
+      operationId: transcribeAudioForNote
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                noteId:
+                  type: string
+                fileName:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Lists of successful and erroneous brick serial numbers 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Note' 
+                
+        '400':
+          description: Invalid status value
+components:
+  schemas:
+    AIResponse:
+      type: object
+      required:
+        - generatedText
+      properties:
+        generatedText:
+          type: string
+    AbstractEntity:
+      type: object
+      #required:
+      #  - id
+      #  - createdAt
+      #  - updatedAt
+      properties:
+        id:
+          type: integer
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-01T13:10:28Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-01T15:22:44Z
+    NoteMetaData:
+      allOf:
+        - $ref: '#/components/schemas/AbstractEntity'
+        - type: object
+          #required:
+          #  - name
+          properties:
+            name:
+              type: string
+              example: Note1
+    Note:
+      allOf:     # Combines the Note and the NoteMetaData model
+        - $ref: '#/components/schemas/NoteMetaData'
+        - type: object
+          #required:
+          #  - rawText
+          #  - aiOutput
+          properties:
+            rawText:
+              type: string
+              example: This is the transcript of an audio record
+            aiOutput:
+              type: string
+              example: AI generated text
+        
+  #securitySchemes:
+  #  serviceAuth:
+  #    type: http
+  #    scheme: bearer
+  #    bearerFormat: JWT
+  
+#security:
+#  - serviceAuth: [] 

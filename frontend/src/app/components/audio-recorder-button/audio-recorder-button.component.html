@@ -1,0 +1,54 @@
+<div class="flex w-fill h-fill">
+  <p-button
+    icon="pi pi-plus"
+    [rounded]="true"
+    (onClick)="openRecorderDialog()"
+  ></p-button>
+  <p-dialog
+    header="Audio Recording"
+    appendTo="body"
+    [(visible)]="dialogVisible"
+    [style]="{ width: '50vw', height: '300px' }"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="false"
+    position="center"
+  >
+    <div>
+      <p-button
+        *ngIf="!isRecording && !audioBlobUrl"
+        (onClick)="startAudioRecording()"
+      >
+        Start Audio Recording
+      </p-button>
+      <p-button
+        class="stop-button"
+        *ngIf="isRecording && !audioBlobUrl"
+        (click)="stopAudioRecording()"
+      >
+        Stop Audio Recording
+      </p-button>
+      <p-button
+        class="cancel-button"
+        *ngIf="!isRecording && audioBlobUrl"
+        (click)="clearAudioRecordedData()"
+      >
+        Clear Audio Recording
+      </p-button>
+      <p-button
+        class="download-button"
+        *ngIf="!isRecording && audioBlobUrl"
+        (click)="downloadAudioRecordedData()"
+      >
+        Download Audio Recording
+      </p-button>
+      <div id="audioTimer" *ngIf="isRecording && !audioBlobUrl">
+        {{ audioTime }}
+      </div>
+      <audio *ngIf="!isRecording && audioBlobUrl" controls>
+        <source [src]="audioBlobUrl" type="audio/mp3" />
+      </audio>
+    </div>
+  </p-dialog>
+</div>

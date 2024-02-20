@@ -1,0 +1,9 @@
+{
+  "name": "thinkify",
+  "version": "1.0.0",
+  "description": "Scripts for frontend and backend",
+  "scripts": {
+    "generate-frontend": "openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o frontend/src/app/generated --additional-properties=ngVersion=17.0.8,npmName=restClient,supportsES6=true",
+    "generate-backend": "openapi-generator-cli generate -i openapi.yaml -g python-flask -o backend -t templates/ --additional-properties=serverPort=8081,featureCORS=true"
+  }
+}

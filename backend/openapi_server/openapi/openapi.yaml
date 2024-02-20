@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: Thinkify - OpenAPI 3.0
+  version: 1.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://thinkify.giolom.com/api/v1
+tags:
+- description: retrieving note information
+  name: note
+- description: ai operations
+  name: ai
+paths:
+  /ai/generateResponseForRawNote:
+    post:
+      description: raw note is taken as input
+      operationId: generate_response_for_raw_note
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/generateResponseForRawNote_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIResponse'
+          description: AI response
+        "400":
+          description: Invalid status value
+      summary: Generate an AI response based on a raw note and prompt
+      tags:
+      - ai
+      x-openapi-router-controller: openapi_server.controllers.ai_controller
+  /ai/transcribeAudioForNote:
+    post:
+      description: "Take an audio file and transcribe it, so we have a textual representation\
+        \ of its content"
+      operationId: transcribe_audio_for_note
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/transcribeAudioForNote_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Note'
+                type: array
+          description: Lists of successful and erroneous brick serial numbers
+        "400":
+          description: Invalid status value
+      summary: Transcribe an audio file
+      tags:
+      - ai
+      x-openapi-router-controller: openapi_server.controllers.ai_controller
+  /note/list:
+    get:
+      description: Array of all notes
+      operationId: get_all_notes
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NoteMetaData'
+                type: array
+          description: Created
+        "404":
+          description: Some bricks or tenants not found
+      summary: Retrieve list of all notes
+      tags:
+      - note
+      x-openapi-router-controller: openapi_server.controllers.note_controller
+  /note/{noteId}:
+    get:
+      description: Full note object with all attributes
+      operationId: get_note_by_id
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: Created
+        "404":
+          description: note not found
+      summary: Get one single note by id
+      tags:
+      - note
+      x-openapi-router-controller: openapi_server.controllers.note_controller
+    patch:
+      description: Full note object with all attributes
+      operationId: update_note_by_id
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: Updated
+        "404":
+          description: note not found
+      summary: Update one single note by id
+      tags:
+      - note
+      x-openapi-router-controller: openapi_server.controllers.note_controller
+components:
+  schemas:
+    AIResponse:
+      example:
+        generatedText: generatedText
+      properties:
+        generatedText:
+          title: generatedText
+          type: string
+      required:
+      - generatedText
+      title: AIResponse
+      type: object
+    AbstractEntity:
+      properties:
+        id:
+          example: 1
+          title: id
+          type: integer
+        createdAt:
+          example: 2024-01-01T13:10:28Z
+          format: date-time
+          title: createdAt
+          type: string
+        updatedAt:
+          example: 2024-01-01T15:22:44Z
+          format: date-time
+          title: updatedAt
+          type: string
+      title: AbstractEntity
+      type: object
+    NoteMetaData:
+      allOf:
+      - $ref: '#/components/schemas/AbstractEntity'
+      - properties:
+          name:
+            example: Note1
+            type: string
+        type: object
+      title: NoteMetaData
+    Note:
+      allOf:
+      - $ref: '#/components/schemas/NoteMetaData'
+      - properties:
+          rawText:
+            example: This is the transcript of an audio record
+            type: string
+          aiOutput:
+            example: AI generated text
+            type: string
+        type: object
+      title: Note
+    generateResponseForRawNote_request:
+      properties:
+        noteId:
+          title: noteId
+          type: string
+        prompt:
+          title: prompt
+          type: string
+      title: generateResponseForRawNote_request
+      type: object
+    transcribeAudioForNote_request:
+      properties:
+        noteId:
+          type: string
+        fileName:
+          format: binary
+          type: string
+      type: object
