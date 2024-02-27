@@ -6,23 +6,33 @@ body {
 }
 
 /* Override general defaults */
+
 p:hover {
   cursor: default;
 }
 
 /* Override PrimeNG classes */
 
-.p-tabview,
-.p-tabview-panels,
+.p-tabview {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-tabview-panels {
+  flex-grow: 10;
+}
+
 .p-editor-container {
-  height: 100% !important;
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
 .p-tabview-panel {
   width: 100%;
+  height: 100%;
 }
 
 /* Adjust tab bar border height to be slightly bigger */

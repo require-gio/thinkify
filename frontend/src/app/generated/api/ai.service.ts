@@ -19,11 +19,7 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { AIResponse } from '../model/aIResponse';
-// @ts-ignore
 import { GenerateResponseForRawNoteRequest } from '../model/generateResponseForRawNoteRequest';
-// @ts-ignore
-import { Note } from '../model/note';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -111,14 +107,18 @@ export class AiService {
     /**
      * Generate an AI response based on a raw note and prompt
      * raw note is taken as input
+     * @param noteId the note identifier, as noteId
      * @param generateResponseForRawNoteRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public generateResponseForRawNote(generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AIResponse>;
-    public generateResponseForRawNote(generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AIResponse>>;
-    public generateResponseForRawNote(generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AIResponse>>;
-    public generateResponseForRawNote(generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public generateResponseForRawNote(noteId: string, generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<string>;
+    public generateResponseForRawNote(noteId: string, generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<string>>;
+    public generateResponseForRawNote(noteId: string, generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<string>>;
+    public generateResponseForRawNote(noteId: string, generateResponseForRawNoteRequest: GenerateResponseForRawNoteRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (noteId === null || noteId === undefined) {
+            throw new Error('Required parameter noteId was null or undefined when calling generateResponseForRawNote.');
+        }
         if (generateResponseForRawNoteRequest === null || generateResponseForRawNoteRequest === undefined) {
             throw new Error('Required parameter generateResponseForRawNoteRequest was null or undefined when calling generateResponseForRawNote.');
         }
@@ -163,8 +163,8 @@ export class AiService {
             }
         }
 
-        let localVarPath = `/ai/generateResponseForRawNote`;
-        return this.httpClient.request<AIResponse>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/ai/generateResponseForRawNote/${this.configuration.encodeParam({name: "noteId", value: noteId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<string>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: generateResponseForRawNoteRequest,
@@ -180,15 +180,18 @@ export class AiService {
     /**
      * Transcribe an audio file
      * Take an audio file and transcribe it, so we have a textual representation of its content
-     * @param noteId 
-     * @param fileName 
+     * @param noteId the note identifier, as noteId
+     * @param file 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public transcribeAudioForNote(noteId?: string, fileName?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Note>>;
-    public transcribeAudioForNote(noteId?: string, fileName?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Note>>>;
-    public transcribeAudioForNote(noteId?: string, fileName?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Note>>>;
-    public transcribeAudioForNote(noteId?: string, fileName?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public transcribeAudioForNote(noteId: string, file?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<string>;
+    public transcribeAudioForNote(noteId: string, file?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<string>>;
+    public transcribeAudioForNote(noteId: string, file?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<string>>;
+    public transcribeAudioForNote(noteId: string, file?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (noteId === null || noteId === undefined) {
+            throw new Error('Required parameter noteId was null or undefined when calling transcribeAudioForNote.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -228,11 +231,8 @@ export class AiService {
             localVarFormParams = new HttpParams({encoder: this.encoder});
         }
 
-        if (noteId !== undefined) {
-            localVarFormParams = localVarFormParams.append('noteId', <any>noteId) as any || localVarFormParams;
-        }
-        if (fileName !== undefined) {
-            localVarFormParams = localVarFormParams.append('fileName', <any>fileName) as any || localVarFormParams;
+        if (file !== undefined) {
+            localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -246,8 +246,8 @@ export class AiService {
             }
         }
 
-        let localVarPath = `/ai/transcribeAudioForNote`;
-        return this.httpClient.request<Array<Note>>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/ai/transcribeAudioForNote/${this.configuration.encodeParam({name: "noteId", value: noteId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<string>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,

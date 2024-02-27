@@ -1,19 +1,27 @@
-from connexion.apps.flask_app import FlaskJSONEncoder
+from connexion.jsonifier import Jsonifier
 
 from openapi_server.models.base_model import Model
 
 
-class JSONEncoder(FlaskJSONEncoder):
-    include_nulls = False
+class JSONEncoder(Jsonifier):
 
-    def default(self, o):
-        if isinstance(o, Model):
+    def dumps(self, data, **kwargs):
+        """Central point where JSON serialization happens inside
+        Connexion.
+        """
+        if isinstance(data, list):
+            return super().dumps([self.dump(item, **kwargs) for item in data])
+
+        return super().dumps(self.dump(data, **kwargs))
+
+    def dump(self, data, **kwargs):
+        if isinstance(data, Model):
             dikt = {}
-            for attr in o.openapi_types:
-                value = getattr(o, attr)
-                if value is None and not self.include_nulls:
+            for attr in data.openapi_types:
+                value = getattr(data, attr)
+                if value is None:
                     continue
-                attr = o.attribute_map[attr]
+                attr = data.attribute_map[attr]
                 dikt[attr] = value
             return dikt
-        return FlaskJSONEncoder.default(self, o)
+        return data

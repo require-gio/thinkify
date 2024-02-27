@@ -12,11 +12,59 @@ tags:
   name: note
 - description: ai operations
   name: ai
+- description: cors support
+  name: cors
 paths:
-  /ai/generateResponseForRawNote:
+  /ai/generateResponseForRawNote/{noteId}:
+    options:
+      description: |
+        Enable CORS by returning correct headers
+      operationId: ai_generate_response_cors
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content: {}
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Methods:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Headers:
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: CORS support
+      tags:
+      - cors
+      x-openapi-router-controller: openapi_server.controllers.cors_controller
     post:
       description: raw note is taken as input
       operationId: generate_response_for_raw_note
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -28,7 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AIResponse'
+                type: string
           description: AI response
         "400":
           description: Invalid status value
@@ -36,11 +84,57 @@ paths:
       tags:
       - ai
       x-openapi-router-controller: openapi_server.controllers.ai_controller
-  /ai/transcribeAudioForNote:
+  /ai/transcribeAudioForNote/{noteId}:
+    options:
+      description: |
+        Enable CORS by returning correct headers
+      operationId: ai_transcribe_cors
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content: {}
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Methods:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Headers:
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: CORS support
+      tags:
+      - cors
+      x-openapi-router-controller: openapi_server.controllers.cors_controller
     post:
       description: "Take an audio file and transcribe it, so we have a textual representation\
         \ of its content"
       operationId: transcribe_audio_for_note
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           multipart/form-data:
@@ -52,10 +146,9 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Note'
-                type: array
-          description: Lists of successful and erroneous brick serial numbers
+                example: This is a transcription
+                type: string
+          description: transcription string
         "400":
           description: Invalid status value
       summary: Transcribe an audio file
@@ -78,6 +171,55 @@ paths:
         "404":
           description: Some bricks or tenants not found
       summary: Retrieve list of all notes
+      tags:
+      - note
+      x-openapi-router-controller: openapi_server.controllers.note_controller
+  /note/new:
+    options:
+      description: |
+        Enable CORS by returning correct headers
+      operationId: new_note_cors
+      responses:
+        "200":
+          content: {}
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Methods:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Headers:
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: CORS support
+      tags:
+      - cors
+      x-openapi-router-controller: openapi_server.controllers.cors_controller
+    put:
+      description: Adds new note object to database
+      operationId: create_new_note
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Created
+      summary: put new note object
       tags:
       - note
       x-openapi-router-controller: openapi_server.controllers.note_controller
@@ -107,7 +249,44 @@ paths:
       tags:
       - note
       x-openapi-router-controller: openapi_server.controllers.note_controller
-    patch:
+    options:
+      description: |
+        Enable CORS by returning correct headers
+      operationId: note_cors
+      parameters:
+      - description: "the note identifier, as noteId"
+        explode: false
+        in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content: {}
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Methods:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Access-Control-Allow-Headers:
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: CORS support
+      tags:
+      - cors
+      x-openapi-router-controller: openapi_server.controllers.cors_controller
+    post:
       description: Full note object with all attributes
       operationId: update_note_by_id
       parameters:
@@ -134,23 +313,42 @@ paths:
           description: Updated
         "404":
           description: note not found
-      summary: Update one single note by id
+      summary: patch note object
       tags:
       - note
       x-openapi-router-controller: openapi_server.controllers.note_controller
 components:
+  parameters:
+    noteId:
+      description: "the note identifier, as noteId"
+      explode: false
+      in: path
+      name: noteId
+      required: true
+      schema:
+        type: string
+      style: simple
+  responses:
+    cors:
+      content: {}
+      description: Default response for CORS method
+      headers:
+        Access-Control-Allow-Origin:
+          explode: false
+          schema:
+            type: string
+          style: simple
+        Access-Control-Allow-Methods:
+          explode: false
+          schema:
+            type: string
+          style: simple
+        Access-Control-Allow-Headers:
+          explode: false
+          schema:
+            type: string
+          style: simple
   schemas:
-    AIResponse:
-      example:
-        generatedText: generatedText
-      properties:
-        generatedText:
-          title: generatedText
-          type: string
-      required:
-      - generatedText
-      title: AIResponse
-      type: object
     AbstractEntity:
       properties:
         id:
@@ -192,19 +390,17 @@ components:
       title: Note
     generateResponseForRawNote_request:
       properties:
-        noteId:
-          title: noteId
-          type: string
         prompt:
+          enum:
+          - summarize
+          - listAsBulletsPoints
           title: prompt
           type: string
       title: generateResponseForRawNote_request
       type: object
     transcribeAudioForNote_request:
       properties:
-        noteId:
-          type: string
-        fileName:
+        file:
           format: binary
           type: string
       type: object

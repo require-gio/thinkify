@@ -1,16 +1,18 @@
-<div class="flex flex-column justify-content-center align-items-center">
-  <ng-container *ngFor="let note of notes$ | async; trackBy:trackByNoteId">
+<div
+  class="flex flex-column justify-content-center align-items-center overflow-auto"
+>
+  <ng-container *ngFor="let note of notes$ | async; trackBy: trackByNoteId">
     <ng-container
-    *ngTemplateOutlet="card; context: { note: note }"
-  ></ng-container>
+      *ngTemplateOutlet="card; context: { note: note }"
+    ></ng-container>
   </ng-container>
 </div>
 
 <ng-template #card pTemplate="card" let-note="note">
   <div class="m-4 w-full max-w-30rem">
     <p-card
-      styleClass="hover:shadow-3 active:shadow-4"
-      [routerLink]="['/detail', note.id]"
+      styleClass="hover:shadow-3 active:shadow-4 cursor-pointer"
+      [routerLink]="['/note', 'detail', note.id]"
     >
       <div class="flex justify-content-center">
         <p class="m-0">

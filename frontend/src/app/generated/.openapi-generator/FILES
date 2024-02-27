@@ -3,12 +3,12 @@ README.md
 api.module.ts
 api/ai.service.ts
 api/api.ts
+api/cors.service.ts
 api/note.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
 index.ts
-model/aIResponse.ts
 model/abstractEntity.ts
 model/generateResponseForRawNoteRequest.ts
 model/models.ts

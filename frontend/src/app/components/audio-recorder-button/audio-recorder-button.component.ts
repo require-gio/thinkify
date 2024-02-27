@@ -3,6 +3,9 @@ import {
   ChangeDetectorRef,
   ViewEncapsulation,
   ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+  Input,
 } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BlockUIModule } from 'primeng/blockui';
@@ -21,6 +24,8 @@ import {
 import { ButtonModule } from 'primeng/button';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
+import { AiService } from '../../generated';
 
 @Component({
   selector: 'app-audio-recorder-button',
@@ -49,6 +54,11 @@ export class AudioRecorderButtonComponent {
   audioBlob: any;
   audioName: string = '';
   audioTime: string = '';
+  subscriptions: Subscription[] = [];
+
+  @Input({ required: true }) noteId: string | null = null;
+  @Output() onTranscriptionCreated: EventEmitter<string> =
+    new EventEmitter<string>();
 
   formGroup: FormGroup = new FormGroup({
     transcribedText: new FormControl(),
@@ -57,32 +67,43 @@ export class AudioRecorderButtonComponent {
   constructor(
     private cdRef: ChangeDetectorRef,
     private audioRecordingService: AudioRecordingService,
+    private aiService: AiService,
     private sanitizer: DomSanitizer,
   ) {
-    this.audioRecordingService.recordingFailed().subscribe(() => {
-      this.isRecording = false;
-      this.cdRef.detectChanges();
-    });
+    this.subscriptions.push(
+      this.audioRecordingService.recordingFailed().subscribe(() => {
+        this.isRecording = false;
+        this.cdRef.detectChanges();
+      }),
+    );
 
-    this.audioRecordingService.getRecordedTime().subscribe((time) => {
-      this.audioTime = time;
-      this.cdRef.detectChanges();
-    });
+    this.subscriptions.push(
+      this.audioRecordingService.getRecordedTime().subscribe((time) => {
+        this.audioTime = time;
+        this.cdRef.detectChanges();
+      }),
+    );
 
-    this.audioRecordingService.getRecordedBlob().subscribe((data) => {
-      this.audioBlob = data.blob;
-      this.audioName = data.title;
-      this.audioBlobUrl = this.sanitizer.bypassSecurityTrustUrl(
-        URL.createObjectURL(data.blob),
-      );
-      this.cdRef.detectChanges();
-    });
+    this.subscriptions.push(
+      this.audioRecordingService.getRecordedBlob().subscribe((data) => {
+        this.audioBlob = data.blob;
+        this.audioName = data.title;
+        this.audioBlobUrl = this.sanitizer.bypassSecurityTrustUrl(
+          URL.createObjectURL(data.blob),
+        );
+        this.cdRef.detectChanges();
+      }),
+    );
   }
 
   ngOnInit() {}
 
   public openRecorderDialog() {
     this.dialogVisible = true;
+  }
+
+  public closeRecorderDialog() {
+    this.dialogVisible = false;
   }
 
   public async startRecording() {
@@ -140,8 +161,21 @@ export class AudioRecorderButtonComponent {
     this._downloadFile(this.audioBlob, 'audio/mp3', this.audioName);
   }
 
+  transcribeAudio() {
+    const blob = new Blob([this.audioBlob], { type: 'audio/mp3' });
+    this.aiService
+      .transcribeAudioForNote(this.noteId!, blob)
+      .subscribe((transcription) => {
+        this.onTranscriptionCreated.emit(transcription);
+        this.closeRecorderDialog();
+      });
+  }
+
   ngOnDestroy(): void {
     this.abortAudioRecording();
+    this.subscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
   }
 
   _downloadFile(data: any, type: string, filename: string): any {

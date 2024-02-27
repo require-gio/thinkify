@@ -16,14 +16,10 @@ export const routes: Routes = [
         path: 'note',
         children: [
           {
-            path: 'new',
-            component: NotesOverviewComponent,
+            path: 'detail/:id',
+            component: NoteDetailComponent,
           },
-        ]
-      },
-      {
-        path: 'detail/:id',
-        component: NoteDetailComponent,
+        ],
       },
     ],
   },

@@ -8,12 +8,12 @@ openapi_server/__init__.py
 openapi_server/__main__.py
 openapi_server/controllers/__init__.py
 openapi_server/controllers/ai_controller.py
+openapi_server/controllers/cors_controller.py
 openapi_server/controllers/note_controller.py
 openapi_server/controllers/security_controller.py
 openapi_server/encoder.py
 openapi_server/models/__init__.py
 openapi_server/models/abstract_entity.py
-openapi_server/models/ai_response.py
 openapi_server/models/base_model.py
 openapi_server/models/generate_response_for_raw_note_request.py
 openapi_server/models/note.py

@@ -12,7 +12,14 @@
 
 
 export interface GenerateResponseForRawNoteRequest { 
-    noteId?: string;
-    prompt?: string;
+    prompt?: GenerateResponseForRawNoteRequest.PromptEnum;
 }
+export namespace GenerateResponseForRawNoteRequest {
+    export type PromptEnum = 'summarize' | 'listAsBulletsPoints';
+    export const PromptEnum = {
+        Summarize: 'summarize' as PromptEnum,
+        ListAsBulletsPoints: 'listAsBulletsPoints' as PromptEnum
+    };
+}
+
 

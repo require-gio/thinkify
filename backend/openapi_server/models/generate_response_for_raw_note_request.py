@@ -12,25 +12,20 @@ class GenerateResponseForRawNoteRequest(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, note_id=None, prompt=None):  # noqa: E501
+    def __init__(self, prompt=None):  # noqa: E501
         """GenerateResponseForRawNoteRequest - a model defined in OpenAPI
 
-        :param note_id: The note_id of this GenerateResponseForRawNoteRequest.  # noqa: E501
-        :type note_id: str
         :param prompt: The prompt of this GenerateResponseForRawNoteRequest.  # noqa: E501
         :type prompt: str
         """
         self.openapi_types = {
-            'note_id': str,
             'prompt': str
         }
 
         self.attribute_map = {
-            'note_id': 'noteId',
             'prompt': 'prompt'
         }
 
-        self._note_id = note_id
         self._prompt = prompt
 
     @classmethod
@@ -43,27 +38,6 @@ class GenerateResponseForRawNoteRequest(Model):
         :rtype: GenerateResponseForRawNoteRequest
         """
         return util.deserialize_model(dikt, cls)
-
-    @property
-    def note_id(self) -> str:
-        """Gets the note_id of this GenerateResponseForRawNoteRequest.
-
-
-        :return: The note_id of this GenerateResponseForRawNoteRequest.
-        :rtype: str
-        """
-        return self._note_id
-
-    @note_id.setter
-    def note_id(self, note_id: str):
-        """Sets the note_id of this GenerateResponseForRawNoteRequest.
-
-
-        :param note_id: The note_id of this GenerateResponseForRawNoteRequest.
-        :type note_id: str
-        """
-
-        self._note_id = note_id
 
     @property
     def prompt(self) -> str:
@@ -83,5 +57,11 @@ class GenerateResponseForRawNoteRequest(Model):
         :param prompt: The prompt of this GenerateResponseForRawNoteRequest.
         :type prompt: str
         """
+        allowed_values = ["summarize", "listAsBulletsPoints"]  # noqa: E501
+        if prompt not in allowed_values:
+            raise ValueError(
+                "Invalid value for `prompt` ({0}), must be one of {1}"
+                .format(prompt, allowed_values)
+            )
 
         self._prompt = prompt

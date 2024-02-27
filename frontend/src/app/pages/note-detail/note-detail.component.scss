@@ -6,3 +6,11 @@
   bottom: 2rem;
   z-index: 1000;
 }
+
+.top {
+  height: 60px;
+}
+
+.container {
+  height: calc(100% - 60px);
+}

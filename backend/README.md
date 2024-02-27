@@ -14,8 +14,8 @@ Python 3.5.2+
 To run the server, please execute the following from the root directory:
 
 ```
-pip3 install -r requirements.txt
-python3 -m openapi_server
+pip install -r requirements.txt
+uvicorn openapi_server.app:app --port 8081
 ```
 
 and open your browser to here:

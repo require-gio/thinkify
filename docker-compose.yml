@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+  db:
+    image: postgres:latest
+    container_name: flask_postgres
+    environment:
+      POSTGRES_DB: flask_db
+      POSTGRES_USER: flask_user
+      POSTGRES_PASSWORD: flask_password
+    volumes:
+      - flask_postgres:/data/postgres
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+
+volumes:
+  flask_postgres:
+    external: false

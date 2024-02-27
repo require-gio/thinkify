@@ -12,6 +12,8 @@ tags:
     description: retrieving note information
   - name: ai
     description: ai operations
+  - name: cors
+    description: cors support
 paths:
   /note/list:
     get:
@@ -33,12 +35,17 @@ paths:
           description: Some bricks or tenants not found
   /note/{noteId}:
     parameters:
-      - name: noteId
-        in: path
-        required: true
-        description: the note identifier, as noteId 
-        schema:
-          type: string
+      - $ref: '#/components/parameters/noteId'
+    options:
+      summary: CORS support
+      operationId: noteCors
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+      - cors
+      responses:
+        200:
+          $ref: '#/components/responses/cors'
     get:
       tags:
         - note
@@ -54,10 +61,10 @@ paths:
                 $ref: '#/components/schemas/Note'  
         '404':
           description: note not found
-    patch:
+    post:
       tags:
         - note
-      summary: Update one single note by id
+      summary: patch note object
       description: Full note object with all attributes
       operationId: updateNoteById
       requestBody:
@@ -75,7 +82,49 @@ paths:
                 $ref: '#/components/schemas/Note'
         '404':
           description: note not found
-  /ai/generateResponseForRawNote:
+  /note/new:
+    options:
+      summary: CORS support
+      operationId: newNoteCors
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+      - cors
+      responses:
+        200:
+          $ref: '#/components/responses/cors'
+    put:
+      tags:
+        - note
+      summary: put new note object
+      description: Adds new note object to database
+      operationId: createNewNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+  /ai/generateResponseForRawNote/{noteId}:
+    parameters:
+      - $ref: '#/components/parameters/noteId'
+    options:
+      summary: CORS support
+      operationId: aiGenerateResponseCors
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+      - cors
+      responses:
+        200:
+          $ref: '#/components/responses/cors'
     post:
       tags:
         - ai
@@ -89,22 +138,35 @@ paths:
             schema:
               type: object
               properties:
-                noteId:
-                  type: string
                 prompt:
                   type: string
+                  enum:
+                    - summarize
+                    - listAsBulletsPoints
       responses:
         '200':
           description: AI response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AIResponse'
+                type: string
                 
         '400':
           description: Invalid status value
   
-  /ai/transcribeAudioForNote:
+  /ai/transcribeAudioForNote/{noteId}:
+    parameters:
+      - $ref: '#/components/parameters/noteId'
+    options:
+      summary: CORS support
+      operationId: aiTranscribeCors
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+      - cors
+      responses:
+        200:
+          $ref: '#/components/responses/cors'
     post:
       tags:
         - ai
@@ -118,32 +180,44 @@ paths:
             schema:
               type: object
               properties:
-                noteId:
-                  type: string
-                fileName:
+                file:
                   type: string
                   format: binary
       responses:
         '200':
-          description: Lists of successful and erroneous brick serial numbers 
+          description: transcription string
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Note' 
+                type: string
+                example: This is a transcription
                 
         '400':
           description: Invalid status value
 components:
+  parameters:
+    noteId:
+      name: noteId
+      in: path
+      required: true
+      description: the note identifier, as noteId 
+      schema:
+        type: string
+  responses:
+    cors:
+      description: Default response for CORS method
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: "string"
+        Access-Control-Allow-Methods:
+          schema:
+            type: "string"
+        Access-Control-Allow-Headers:
+          schema:
+            type: "string"
+      content: {}
   schemas:
-    AIResponse:
-      type: object
-      required:
-        - generatedText
-      properties:
-        generatedText:
-          type: string
     AbstractEntity:
       type: object
       #required:

@@ -1,6 +1,6 @@
 <div class="flex w-fill h-fill">
   <p-button
-    icon="pi pi-plus"
+    icon="pi pi-microphone"
     [rounded]="true"
     (onClick)="openRecorderDialog()"
   ></p-button>
@@ -15,7 +15,7 @@
     [dismissableMask]="false"
     position="center"
   >
-    <div>
+    <div class="flex flex-column gap-3">
       <p-button
         *ngIf="!isRecording && !audioBlobUrl"
         (onClick)="startAudioRecording()"
@@ -39,9 +39,9 @@
       <p-button
         class="download-button"
         *ngIf="!isRecording && audioBlobUrl"
-        (click)="downloadAudioRecordedData()"
+        (click)="transcribeAudio()"
       >
-        Download Audio Recording
+        Transcribe Audio
       </p-button>
       <div id="audioTimer" *ngIf="isRecording && !audioBlobUrl">
         {{ audioTime }}
